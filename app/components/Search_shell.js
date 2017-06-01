@@ -1,15 +1,38 @@
 var React = require("react");
+// var request = require("request");
 
 var Results = require("./children/Results");
 var Saved = require("./children/Saved");
 
 var Search_shell = React.createClass({
 
-    searchNyt: function(){
-        
-        var userTopic = "spaceX";
-        var userBD = "19800101";
-        var userED = "20170101";
+    getInitialState: function(){
+        return {topic: '',
+                startYear: '',
+                endYear: ''}
+    },
+    handleChange: function(key){
+        return function(e){
+            var state = {};
+            state[key] = e.target.value;
+            this.setState(state);
+        }.bind(this);
+    },
+    handleSubmit(event){
+        console.log(this.state.topic);
+        event.preventDefault();
+    },
+
+    searchNyt: function(event){    
+        // var userTopic = "spaceX";
+        // var userBD = "19800101";
+        // var userED = "20170101";
+        var userTopic = this.state.topic;
+        var userBD = this.state.startYear;
+        var userED = this.state.endYear;
+        console.log(userTopic);
+        console.log(userBD);
+        console.log(userED);
 
         request.get({
             url: "https://api.nytimes.com/svc/search/v2/articlesearch.json",
@@ -42,15 +65,14 @@ var Search_shell = React.createClass({
                             </div>
                             <div className="panel-body text-center">
                                 <div className="col-md-12">
-                                    <form>
-                                        <p>Topic</p>
-                                        <input type="text" className="form-control" placeholder="i.e: Pick a good one it's crazy out there" />
-                                        <p>Start Year</p>
-                                        <input type="text" className="form-control" placeholder="YYYYMMDD - bes follow my format" />
-                                        <p>End Year</p>
-                                        <input type="text" className="form-control" placeholder="YYYYMMDD - do it or else" />
-                                        <br/><br/>
-                                        <input type="submit" className="btn btn-primary btn-lg" value="submit" />
+                                    <form onSubmit={this.searchNyt}>
+                                        Topic: <input className="form-control" value={this.state.topic} onChange={this.handleChange('topic')} placeholder="i.e: Pick a good one it's crazy out there" />
+                                        <br />
+                                        Start Year: <input className="form-control" value={this.state.startYear} onChange={this.handleChange('startYear')} placeholder="YYYYMMDD - bes follow my format"  />
+                                        <br />
+                                        End Year: <input className="form-control" value={this.state.endYear} onChange={this.handleChange('endYear')} placeholder="YYYYMMDD - do it or else" />
+                                        <br />
+                                        <input type="submit" className="btn btn-primary btn-lg" value="Submit" />
                                     </form>
                                 </div>
                             </div>
