@@ -41,24 +41,38 @@ db.once("open", function() {
   console.log("Mongoose connection successful.");
 });
 
+// ================================================
 // Routes
-//Route to get saved articles
-app.get('/api/saved', function(req, res) {
+// ================================================
+
+//Route to display main index.html page
+app.get('/', function(req, res) {
+	res.sendFile(__dirname + "/public/index.html");
+});
+
+//Route to get articles
+app.get('/api', function(req, res) {
 	Article.find({}).exec(function(err, doc) {
-		if (err) { 
-			console.log(err);
-		} else {
-			res.send(doc);
-		}
+		var articles = [];
+		doc.forEach(function(article){
+			articles.push({
+				title:article.title,
+				url: article.url,
+				date: article.date,
+				articleID: article.articleID
+			});
+		});
+		res.send(articles);
 	});
 });
 
 //Route to post saved articles
-app.post('/api/saved', function(req, res) {
+app.post('/api', function(req, res) {
 	Article.create({
-		title: req.body.article.title,
-		date: req.body.article.date,
-		url: req.body.article.turl,
+		articleID: req.body.id,
+		title: req.body.title,
+		date: req.body.date,
+		url: req.body.url,
 	}, function(err) {
 		if (err) {
 			console.log(err);
@@ -69,9 +83,9 @@ app.post('/api/saved', function(req, res) {
 });
 
 //Route to delete saved articles
-app.delete('/api/saved', function(req, res) {
+app.post('/api/delete', function(req, res) {
 	Article.remove({
-		_id: req.body.article._id
+		articleID: req.body.id
 	}, function(err) {
 		if (err) {
 			console.log(err);
@@ -81,10 +95,7 @@ app.delete('/api/saved', function(req, res) {
 	});
 });
 
-//Route to display main index.html page
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + "/public/index.html");
-});
+
 
 // Listen on port 3000
 app.listen(process.env.PORT || 3000, function() {
